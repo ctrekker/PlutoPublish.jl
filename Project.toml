@@ -1,0 +1,7 @@
+name = "PlutoPublish"
+uuid = "8101fb26-ae3c-408d-aed3-f7cb81499a91"
+authors = ["Connor Burns <ctrekker4@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
