@@ -35,19 +35,23 @@ function get_notebook_code(id::UUIDish; kw...)
     req = HTTP.get(endpoint("/notebooks/$(id)/code"; kw...))
     String(req.body)
 end
-function publish_notebook(notebook_path::AbstractString, notebook_name::AbstractString; kw...)
+function publish_notebook(notebook_path::AbstractString, notebook_name::AbstractString; apikey=nothing, kw...)
     open(notebook_path) do notebook_io
         body_data = Dict(
             "notebook" => HTTP.Multipart(notebook_name, notebook_io, "application/x-pluto-statefile")
         )
 
         body = HTTP.Form(body_data)
+        headers = []
+        if !isnothing(apikey)
+            push!(headers, "X-Api-Key" => apikey)
+        end
         
-        req = HTTP.post(endpoint("/notebooks" * (isnothing(notebook_name) ? "" : "?name=$(HTTP.escapeuri(notebook_name))"); kw...), [], body)
+        req = HTTP.post(endpoint("/notebooks" * (isnothing(notebook_name) ? "" : "?name=$(HTTP.escapeuri(notebook_name))"); kw...), headers, body)
         JSON3.read(req.body) |> DataFrame
     end
 end
-function update_notebook(id::UUIDish, patch_data::Dict; kw...)
+function update_notebook(id::UUIDish, patch_data::Dict; apikey=nothing, kw...)
     notebook_file = if haskey(patch_data, "notebook")
         nbfile = patch_data["notebook"]
         delete!(patch_data, "notebook")
@@ -63,11 +67,21 @@ function update_notebook(id::UUIDish, patch_data::Dict; kw...)
     else
         nothing
     end
+
+    headers = []
+    if !isnothing(apikey)
+        push!(headers, "X-Api-Key" => apikey)
+    end
     
-    req = HTTP.patch(endpoint("/notebooks/$(id)" * query_string(patch_data); kw...); body=isnothing(notebook_body) ? UInt8[] : notebook_body)
+    req = HTTP.patch(endpoint("/notebooks/$(id)" * query_string(patch_data); kw...), headers, isnothing(notebook_body) ? UInt8[] : notebook_body)
     JSON3.read(req.body) |> DataFrame
 end
-function delete_notebook(id::UUIDish; kw...)
-    req = HTTP.delete(endpoint("/notebooks/$(id)"; kw...))
+function delete_notebook(id::UUIDish; apikey=nothing, kw...)
+    headers = []
+    if !isnothing(apikey)
+        push!(headers, "X-Api-Key" => apikey)
+    end
+
+    req = HTTP.delete(endpoint("/notebooks/$(id)"; kw...), headers)
     req.status
 end
