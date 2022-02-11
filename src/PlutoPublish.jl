@@ -92,7 +92,6 @@ publisher(destination::String = "https://plutopublish.com") = function(event::Pl
             end
         end
     elseif typeof(event) == Pluto.ServerStartEvent
-        @info event
         server_start_event = event
     end
 end
