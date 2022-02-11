@@ -1,6 +1,8 @@
 using JSON3
+import HTTP
 
 upload_meta_file = joinpath(export_cache, "upload_metadata.json")
+apikey_file = joinpath(export_cache, "apikey.txt")
 
 new_notebook_hashes = Set{Pair{String, Symbol}}()
 
@@ -11,6 +13,20 @@ function notebook_meta!(meta_dict, notebook_hash::String)
 
     meta_dict[Symbol(notebook_hash)]
 end
+function get_apikey(url::String)
+    if isfile(apikey_file)
+        return read(apikey_file, String)
+    else
+        resp = HTTP.post("$(url)/keys")
+        resp_json = JSON3.read(resp.body)
+        apikey = resp_json["apikey"]
+        open(apikey_file, "w") do io
+            write(io, apikey)
+        end
+
+        return apikey
+    end
+end
 
 function _publish_notebook(notebook::Pluto.Notebook, notebook_hash::String, url::String)
     if !isfile(upload_meta_file)
@@ -18,6 +34,8 @@ function _publish_notebook(notebook::Pluto.Notebook, notebook_hash::String, url:
             write(io, JSON3.write(Dict()))
         end
     end
+
+    apikey = get_apikey(url)
 
     meta = copy(JSON3.read(read(upload_meta_file, String)))
     nbmeta = notebook_meta!(meta, notebook_hash)
@@ -29,7 +47,7 @@ function _publish_notebook(notebook::Pluto.Notebook, notebook_hash::String, url:
     fresh_publish() = begin
         try
             push!(new_notebook_hashes, notebook_hash => url_id_key)
-            res = publish_notebook(notebook_path, notebook_name; url)
+            res = publish_notebook(notebook_path, notebook_name; url, apikey)
             if !haskey(nbmeta, :id)
                 nbmeta[:id] = Dict()
             end
@@ -47,7 +65,7 @@ function _publish_notebook(notebook::Pluto.Notebook, notebook_hash::String, url:
             update_notebook(nbmeta[:id][url_id_key], Dict(
                 "name" => notebook_name,
                 "notebook" => notebook_path
-            ); url)
+            ); url, apikey)
         catch e
             if e isa HTTP.ExceptionRequest.StatusError
                 if e.status == 404
