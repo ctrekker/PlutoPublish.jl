@@ -18,7 +18,7 @@ Next, open up a Julia REPL with the `julia` command in a terminal. Enter Pkg mod
 (@v1.7) pkg> add PlutoPublish
 ```
 
-Now start a Pluto server __with the publisher enabled__. This _will not_ publish any notebooks without explicit permission later.
+Now start a Pluto server __with the publisher enabled__. This _will not_ publish any notebooks without explicit action later.
 
 ```julia
 using Pluto, PlutoPublish
