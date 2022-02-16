@@ -2,7 +2,6 @@ using JSON3
 import HTTP
 
 upload_meta_file = joinpath(export_cache, "upload_metadata.json")
-apikey_file = joinpath(export_cache, "apikey.txt")
 
 new_notebook_hashes = Set{Pair{String, Symbol}}()
 
@@ -14,6 +13,8 @@ function notebook_meta!(meta_dict, notebook_hash::String)
     meta_dict[Symbol(notebook_hash)]
 end
 function get_apikey(url::String)
+    uri = HTTP.URI(url)
+    apikey_file = joinpath(export_cache, "$(uri.host)-apikey.txt")
     if isfile(apikey_file)
         return read(apikey_file, String)
     else
