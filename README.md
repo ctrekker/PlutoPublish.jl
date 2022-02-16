@@ -4,10 +4,8 @@ The Julia package that makes [plutopublish.com](https://plutopublish.com) work. 
 
 ## Installation
 
-_Coming to general registry soon!_
-
 ```julia
-(@v1.7) pkg> add https://github.com/ctrekker/PlutoPublish.jl.git
+(@v1.7) pkg> add PlutoPublish
 ```
 
 ## Quick Start
@@ -29,7 +27,7 @@ Pluto.run(; on_event=publish)
 
 By passing in the `publish` function exported by `PlutoPublish` we listen for publishing requests inside notebooks and will automatically push updates when we do get requests.
 
-And that's pretty much it!! Once you've got a notebook open that you want to publish, just add a cell with the following code in it:
+Once you've got a notebook open that you want to publish, just add a cell with the following code in it:
 
 ```julia
 PUBLISH = true;
