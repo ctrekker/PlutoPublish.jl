@@ -33,6 +33,6 @@ Once you've got a notebook open that you want to publish, just add a cell with t
 PUBLISH = true;
 ```
 
-<span class="note"><b>NOTE:</b> This code __must__ be in __its own cell__ for reasons elaborated on [here](https://plutopublish.com/docs/how-it-works.md)</span>
+<span class="note"><b>NOTE:</b> This code __must__ be in __its own cell__
 
 The `PlutoPublish` package will detect this cell and automatically upload and publish your notebook to this site every time you make a change!
