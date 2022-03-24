@@ -22,7 +22,7 @@ Now start a Pluto server __with the publisher enabled__. This _will not_ publish
 
 ```julia
 using Pluto, PlutoPublish
-Pluto.run(; on_event=publish)
+Pluto.run(; on_event=publish())
 ```
 
 By passing in the `publish` function exported by `PlutoPublish` we listen for publishing requests inside notebooks and will automatically push updates when we do get requests.
